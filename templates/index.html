@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../static/favicon.ico">
+
+    <title>Trend tester</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../static/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/starter-template.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#getSymbols').click(function () {
+                $('#myOverlay').show();
+                $('#message').html("Getting Historical data and plotting");
+                $('#loadingGIF').show();
+                $.ajax({
+                    type: "post",
+                    url: "getSymbols",
+                    dataType: "text",
+                    data: {
+                        'symbols': $("#symbols").val(),
+                        'from': $("#from").val(),
+                        'to': $("#to").val()
+                    },
+                    success: function (graphs) {
+                        Plotly.newPlot("myPlot", // the ID of the div, created above
+                            JSON.parse(graphs).data, JSON.parse(graphs).layout);
+                        bollDone = false;
+                        smaDone = false;
+                        $('#myOverlay').hide();
+                        $('#loadingGIF').hide();
+                    },
+                    error: function (data) {
+                        bollDone = false;
+                        smaDone = false;
+                        $('#myOverlay').hide();
+                        $('#loadingGIF').hide();
+                        alert("Error getting data, try again");
+                    }
+                }); // End ajax method
+            });
+        });
+        smaCount = 0;
+        $(function () {
+            $("#addSMA").click(function () {
+                if (smaCount < 4) {
+                    $.get('sma', function (data) {
+                        $("#SMAs").append(data);
+                        smaCount++;
+                    });
+                } else {
+                    alert("Max 4 SMA allowed");
+                }
+            });
+        });
+
+        $(function () {
+            $("#addRule").click(function () {
+                $.get('rule', function (data) {
+                    $("#rules").append(data);
+                });
+            });
+        });
+
+
+        smaDone = false;
+        $(function () {
+            $('#plotSMA').click(function () {
+                if (!smaDone) {
+                    var sma = [];
+                    $('.sma').each(function () {
+                        sma.push($(this).val());
+                    });
+                    $.ajax({
+                        type: "post",
+                        url: "plotSMAs",
+                        dataType: "text",
+                        data: {
+                            'sma': sma
+                        },
+                        success: function (graphs) {
+                            Plotly.newPlot("myPlot", // the ID of the div, created above
+                                JSON.parse(graphs).data, JSON.parse(graphs).layout);
+                            smaDone = true;
+                        }
+                    }); // End ajax method
+                } else {
+                    alert("Fetch data again to reset chart before new SMA");
+                }
+
+            });
+        });
+        bollDone = false;
+        $(function () {
+            $('#plotBoll').click(function () {
+                if (!bollDone) {
+                    $.ajax({
+                        type: "post",
+                        url: "plotBoll",
+                        success: function (graphs) {
+                            Plotly.newPlot("myPlot", // the ID of the div, created above
+                                JSON.parse(graphs).data, JSON.parse(graphs).layout);
+                            bollDone = true;
+                        }
+                    }); // End ajax method
+                } else {
+                    alert("Fetch data again to reset chart before new Bollinger Bands");
+                }
+
+            });
+        });
+        $(function () {
+            $('#run').click(function () {
+                $('#myOverlay').show();
+                $('#message').html("Running rules. Hang on...");
+                $('#loadingGIF').show();
+                var ruleL = [];
+                var ruleRule = [];
+                var ruleR = [];
+                var ruleSignal = [];
+                $('.ruleL').each(function () {
+                    ruleL.push($(this).val());
+                });
+                $('.ruleRule').each(function () {
+                    ruleRule.push($(this).val());
+                });
+                $('.ruleR').each(function () {
+                    ruleR.push($(this).val());
+                });
+                $('.ruleSignal').each(function () {
+                    ruleSignal.push($(this).val());
+                });
+                $.ajax({
+                    type: "post",
+                    url: "runRules",
+                    dataType: "text",
+                    data: {
+                        'ruleL': ruleL,
+                        'ruleRule': ruleRule,
+                        'ruleR': ruleR,
+                        'ruleSignal': ruleSignal,
+                    },
+                    success: function (result) {
+                        $("#result").html(result);
+                        $('#myOverlay').hide();
+                        $('#loadingGIF').hide();
+                    },
+                    error: function (data) {
+                        $('#myOverlay').hide();
+                        $('#loadingGIF').hide();
+                        alert("Error running rules, try again");
+                    }
+                }); // End ajax method
+
+            });
+        });
+        $(function () {
+            $(".datepicker").datepicker();
+        });
+    </script>
+</head>
+
+<body>
+    <div id="myOverlay"></div>
+    <div id="loadingGIF">
+        <div id="message"></div>
+        <img src="http://pankajmalhotra.com/public/images/loading_dots.gif" />
+    </div>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Trend tester</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="starter-template span12">
+            <div class="col-xs-12 col-md-3">
+                <div class="col-md-4"> Symbols: </div>
+                <input type="text" id="symbols" class=" col-md-8" />
+            </div>
+
+            <div class="col-xs-12 col-md-3">
+                <div class="col-md-4"> From: </div><input type="text" id="from" class="datepicker col-md-8" />
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <div class="col-md-4"> To: </div> <input type="text" id="to" class="datepicker col-md-8" />
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <button id="getSymbols">Get Data</button>
+            </div>
+        </div>
+        <div class="starter-template span12">
+            <div class="col-xs-12 col-md-2">
+                <button id="addSMA">Add SMA</button>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                <button id="plotSMA">Plot SMA</button>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                <button id="plotBoll">Plot Bollinger</button>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                <button id="addRule">Add Rule</button>
+            </div>
+            <div class="col-xs-12 col-md-2">
+                <button id="run">Run Rules</button>
+            </div>
+        </div>
+        <div class="starter-template span12">
+            <div id="SMAs"></div>
+        </div>
+        <div class="starter-template span12">
+            <div id="rules" class="container"></div>
+        </div>
+        <!-- /.container -->
+        <div class="container">
+
+            <div id="myPlot"></div>
+            <div id="result"></div>
+        </div>
+        <!-- Bootstrap core JavaScript
+    ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="../static/js/ie10-viewport-bug-workaround.js "></script>
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+#myOverlay{position:absolute;height:100%;width:100%;}
+#myOverlay{background:whitesmoke;opacity:.5;z-index:10;display:none;}
+
+#loadingGIF{position:absolute;top:40%;left:45%;z-index:11;display:none;}
