@@ -16,6 +16,7 @@ store= dataStore()
 @app.route('/')
 def main():
     session['smaCount']=0
+    store=dataStore()
     store.dataList=[]
     store.graphs=dict()
     store.symbolList=[]
