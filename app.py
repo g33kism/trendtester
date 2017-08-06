@@ -16,16 +16,11 @@ store= dataStore()
 @app.route('/')
 def main():
     session['smaCount']=0
-    store=dataStore()
-    store.dataList=[]
-    store.graphs=dict()
-    store.symbolList=[]
-    store.optionList=[]
+    store.reset()
     return render_template('index.html')
 
 @app.route('/rule')
 def rule():
-    print
     return render_template('rule.html',options=store.optionList)
     
 @app.route('/sma')
@@ -96,6 +91,8 @@ def plotBoll():
 
 @app.route('/getSymbols',methods=['POST'])
 def getSymbols():
+    session['smaCount']=0
+    store.reset()
     _symbols=request.form['symbols']
     _from=datetime.datetime.strptime(request.form['from'], '%m/%d/%Y').strftime('%Y-%m-%d')
     _to=datetime.datetime.strptime(request.form['to'], '%m/%d/%Y').strftime('%Y-%m-%d')
