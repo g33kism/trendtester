@@ -144,6 +144,7 @@ def executeRule(ruleL,ruleRule,ruleSignal,ruleR,data):
     buyCount=0
     sellCount=0
     for i in range(1,len(data)):
+        #print i
         for iterator in range(len(ruleL)):
             if ruleRule[iterator]=='goes above':
                 if (data.signal[i]=='') & (data[ruleL[iterator]][i-1]>data[ruleR[iterator]][i-1]) & (lastSignal!=ruleSignal[iterator]):
