@@ -53,6 +53,9 @@
                         smaDone = false;
                         $('#myOverlay').hide();
                         $('#loadingGIF').hide();
+                        $("#addSMA").removeAttr("disabled");
+                        $("#plotBoll").removeAttr("disabled");
+
                     },
                     error: function (data) {
                         bollDone = false;
@@ -71,6 +74,7 @@
                     $.get('sma', function (data) {
                         $("#SMAs").append(data);
                         smaCount++;
+                        $("#plotSMA").removeAttr("disabled");
                     });
                 } else {
                     alert("Max 4 SMA allowed");
@@ -82,6 +86,7 @@
             $("#addRule").click(function () {
                 $.get('rule', function (data) {
                     $("#rules").append(data);
+                    $("#run").removeAttr("disabled");
                 });
             });
         });
@@ -106,6 +111,7 @@
                             Plotly.newPlot("myPlot", // the ID of the div, created above
                                 JSON.parse(graphs).data, JSON.parse(graphs).layout);
                             smaDone = true;
+                            $("#addRule").removeAttr("disabled");
                         }
                     }); // End ajax method
                 } else {
@@ -125,6 +131,7 @@
                             Plotly.newPlot("myPlot", // the ID of the div, created above
                                 JSON.parse(graphs).data, JSON.parse(graphs).layout);
                             bollDone = true;
+                            $("#addRule").removeAttr("disabled");
                         }
                     }); // End ajax method
                 } else {
@@ -219,26 +226,26 @@
                 <div class="col-md-4"> To: </div> <input type="text" id="to" class=" col-md-8" data-toggle="datepicker"/>
             </div>
             <div class="col-xs-12 col-md-3">
-                <button id="getSymbols">Get Data</button>
-                <button id="reset">Reset All</button>
+                <button class="btn btn-primary" id="getSymbols">Get Data</button>
+                <button  class="btn btn-danger" id="reset">Reset All</button>
             </div>
         </div>
 
         <div class="starter-template span12">
             <div class="col-xs-12 col-md-2">
-                <button id="addSMA">Add SMA</button>
+                <button class="btn btn-default" id="addSMA" disabled >Add SMA</button>
             </div>
             <div class="col-xs-12 col-md-2">
-                <button id="plotSMA">Plot SMA</button>
+                <button class="btn btn-default" id="plotSMA" disabled>Plot SMA</button>
             </div>
             <div class="col-xs-12 col-md-2">
-                <button id="plotBoll">Plot Bollinger</button>
+                <button class="btn btn-default" id="plotBoll" disabled>Plot Bollinger</button>
             </div>
             <div class="col-xs-12 col-md-2">
-                <button id="addRule">Add Rule</button>
+                <button class="btn btn-default" id="addRule" disabled>Add Rule</button>
             </div>
             <div class="col-xs-12 col-md-2">
-                <button id="run">Run Rules</button>
+                <button class="btn btn-default" id="run" disabled>Run Rules</button>
             </div>
         </div>
         <div class="starter-template span12">
