@@ -164,7 +164,6 @@ def executeRule(ruleL,ruleRule,ruleSignal,ruleR,data):
                 maxDrawdown=totalProfit
         if totalProfit<maxLoss:
             maxLoss=totalProfit
-    data.to_csv('dataout2.csv')
     return totalProfit, maxProfit, maxLoss, maxDrawdown, peakdays,buyCount,sellCount
 
 @app.route('/runRules',methods=['POST'])
