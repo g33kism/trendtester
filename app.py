@@ -114,10 +114,10 @@ def getGraphDict(_symbols):
         layout=dict(
             title=_symbols,
             yaxis=dict(
-                title="Time"
+                title="Close"
             ),
             xaxis=dict(
-                title="Close"
+                title="Time"
             )
         )
     )
