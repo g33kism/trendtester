@@ -17,7 +17,7 @@ jupyter-core==4.3.0
 MarkupSafe==1.0
 multitasking==0.0.4
 nbformat==4.3.0
-numpy==1.13.0
+numpy==1.21.0
 packaging==16.8
 pandas==0.20.2
 pandas-datareader==0.4.0
